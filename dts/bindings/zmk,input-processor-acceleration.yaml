@@ -3,38 +3,84 @@ description: ZMK Velocity-Based Pointer Acceleration Input Processor
 
 compatible: "zmk,input-processor-acceleration"
 
-include: ip_zero_param.yaml      # (Standard input device base binding, if applicable)
+include: ip_zero_param.yaml
 
 properties:
   input-type:
     type: int
     required: true
     description: Input event type to accelerate (e.g. INPUT_EV_REL for relative events)
-    
+
+  codes:
+    type: array
+    description: |
+      Input event codes to process (e.g. INPUT_REL_X, INPUT_REL_Y).
+      If not specified, defaults to INPUT_REL_X and INPUT_REL_Y.
+
+  sensitivity:
+    type: int
+    default: 1000
+    description: |
+      Base sensitivity multiplier (scaled by 1000).
+      1000 = 1.0x, 1200 = 1.2x, 800 = 0.8x.
+
   min-factor:
     type: int
     default: 1000    # 1.000x (no deceleration by default)
-    description: Minimum pointer speed factor (scaled by 1000). Values <1000 slow down movements at very low speeds (e.g. 500 for 0.5x).
+    description: |
+      Minimum pointer speed factor (scaled by 1000).
+      Values <1000 slow down movements at very low speeds.
+      Used primarily in Level 2 (Standard) mode.
 
   max-factor:
     type: int
     default: 3500    # 3.500x
-    description: Maximum pointer speed factor (scaled by 1000). Movement will be accelerated up to this factor at high speeds.
+    description: |
+      Maximum acceleration factor (scaled by 1000).
+      Movement will be accelerated up to this factor at high speeds.
 
   speed-threshold:
     type: int
     default: 1000    # counts per second
-    description: Pointer speed (counts per second) at which acceleration factor reaches 1.0 (no scaling). Below this speed, movements may be decelerated; above it, movements accelerate.
+    description: |
+      Pointer speed (counts/sec) at which acceleration factor reaches 1.0.
+      Used in Level 2 (Standard) mode.
 
   speed-max:
-      type: int
-      default: 6000    # counts per second
-      description: Pointer speed (counts per second) at which the acceleration factor reaches max-factor. Movements faster than this use the maximum acceleration.
+    type: int
+    default: 6000    # counts per second
+    description: |
+      Pointer speed (counts/sec) at which maximum acceleration is reached.
+      Used in Level 2 (Standard) mode.
 
   acceleration-exponent:
-      type: int
-      default: 1       # 1 = linear
-      description: Exponent for the acceleration curve. 1 = linear acceleration. 2 or higher applies a more exponential (polynomial) curve for acceleration above the threshold. 
+    type: int
+    default: 1       # 1 = linear
+    description: |
+      Exponent for the acceleration curve in Level 2 (Standard) mode.
+      1 = linear, 2 = quadratic, 3 = cubic.
+
+  curve-type:
+    type: int
+    default: 1
+    description: |
+      Acceleration curve type for Level 1 (Simple) mode.
+      0 = Linear (gradual), 1 = Mild (smooth), 2 = Strong (aggressive).
+
+  sensor-dpi:
+    type: int
+    default: 800
+    description: |
+      Sensor DPI/CPI setting. Used for automatic sensitivity scaling.
+      Standard reference is 800 DPI.
+
+  y-boost:
+    type: int
+    default: 1000
+    description: |
+      Y-axis sensitivity boost (scaled by 1000).
+      1000 = same as X, 1200 = 1.2x Y-axis boost.
+      Useful for widescreen displays.
 
   track-remainders:
     type: boolean

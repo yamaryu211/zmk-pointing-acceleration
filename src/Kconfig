@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-# Kconfig для ZMK Input Processor Acceleration
+# Kconfig for ZMK Input Processor Acceleration
 
 DT_COMPAT_ZMK_INPUT_PROCESSOR_ACCELERATION := zmk,input-processor-acceleration
 
@@ -16,3 +16,126 @@ config INPUT_PROCESSOR_ACCELERATION_INIT_PRIORITY
     int "Input processor acceleration initialization priority"
     depends on ZMK_INPUT_PROCESSOR_ACCELERATION
     default INPUT_INIT_PRIORITY
+
+# =============================================================================
+# CONFIGURATION LEVEL SELECTION
+# =============================================================================
+
+choice INPUT_PROCESSOR_ACCEL_LEVEL
+    prompt "Acceleration Configuration Level"
+    depends on ZMK_INPUT_PROCESSOR_ACCELERATION
+    default INPUT_PROCESSOR_ACCEL_LEVEL_SIMPLE
+    help
+      Choose the complexity level for pointing device acceleration:
+      - Simple: Input magnitude-based curves with presets
+      - Standard: Speed-based acceleration with advanced curves
+
+config INPUT_PROCESSOR_ACCEL_LEVEL_SIMPLE
+    bool "Simple (magnitude-based curves with presets)"
+    help
+      Simple configuration using input magnitude for acceleration curves.
+      Includes sensitivity, max-factor, curve-type, Y-boost, and DPI adjustment.
+
+config INPUT_PROCESSOR_ACCEL_LEVEL_STANDARD
+    bool "Standard (speed-based acceleration with presets)"
+    help
+      Standard configuration using speed-based acceleration with exponential curves,
+      configurable speed thresholds, and min/max factors.
+
+endchoice
+
+config INPUT_PROCESSOR_ACCEL_LEVEL
+    int
+    default 1 if INPUT_PROCESSOR_ACCEL_LEVEL_SIMPLE
+    default 2 if INPUT_PROCESSOR_ACCEL_LEVEL_STANDARD
+
+# =============================================================================
+# PRESET SELECTION (shared between levels)
+# =============================================================================
+
+choice INPUT_PROCESSOR_ACCEL_PRESET
+    prompt "Acceleration Preset"
+    depends on ZMK_INPUT_PROCESSOR_ACCELERATION
+    default INPUT_PROCESSOR_ACCEL_PRESET_CUSTOM
+    help
+      Choose a preset configuration based on usage and device type.
+
+config INPUT_PROCESSOR_ACCEL_PRESET_CUSTOM
+    bool "Custom (configure via device tree)"
+
+# Office presets
+config INPUT_PROCESSOR_ACCEL_PRESET_OFFICE_OPTICAL
+    bool "Office - Optical Mouse (800 DPI)"
+    help
+      Conservative acceleration for office work with standard optical mouse.
+      Sensitivity: 1.0x, Max: 2.2x, Curve: Mild, DPI: 800
+
+config INPUT_PROCESSOR_ACCEL_PRESET_OFFICE_LASER
+    bool "Office - Laser Mouse (1600 DPI)"
+    help
+      Conservative acceleration for office work with laser mouse.
+      Sensitivity: 1.0x, Max: 1.5x, Curve: Linear, DPI: 1600
+
+config INPUT_PROCESSOR_ACCEL_PRESET_OFFICE_TRACKBALL
+    bool "Office - Trackball (400 DPI)"
+    help
+      Conservative acceleration for office work with trackball.
+      Sensitivity: 1.5x, Max: 2.0x, Curve: Mild, DPI: 400
+
+config INPUT_PROCESSOR_ACCEL_PRESET_OFFICE_TRACKPAD
+    bool "Office - Trackpad/Touchpad (1000 DPI)"
+    help
+      Conservative acceleration for office work with trackpad.
+      Sensitivity: 1.2x, Max: 1.8x, Curve: Linear, DPI: 1000
+
+# Gaming presets
+config INPUT_PROCESSOR_ACCEL_PRESET_GAMING_OPTICAL
+    bool "Gaming - Optical Mouse (1200 DPI)"
+    help
+      Balanced acceleration for gaming with optical mouse.
+      Sensitivity: 1.0x, Max: 2.5x, Curve: Strong, DPI: 1200
+
+config INPUT_PROCESSOR_ACCEL_PRESET_GAMING_LASER
+    bool "Gaming - Laser Mouse (3200 DPI)"
+    help
+      Balanced acceleration for gaming with high-DPI laser mouse.
+      Sensitivity: 0.6x, Max: 2.5x, Curve: Strong, DPI: 3200
+
+config INPUT_PROCESSOR_ACCEL_PRESET_GAMING_TRACKBALL
+    bool "Gaming - Trackball (800 DPI)"
+    help
+      Balanced acceleration for gaming with trackball.
+      Sensitivity: 1.2x, Max: 2.3x, Curve: Strong, DPI: 800
+
+config INPUT_PROCESSOR_ACCEL_PRESET_GAMING_TRACKPAD
+    bool "Gaming - Trackpad/Touchpad (1200 DPI)"
+    help
+      Balanced acceleration for gaming with trackpad.
+      Sensitivity: 1.1x, Max: 2.2x, Curve: Mild, DPI: 1200
+
+# High sensitivity presets
+config INPUT_PROCESSOR_ACCEL_PRESET_HIGH_SENS_OPTICAL
+    bool "High Sensitivity - Optical Mouse (1600 DPI)"
+    help
+      High sensitivity for fast movements with optical mouse.
+      Sensitivity: 1.1x, Max: 2.8x, Curve: Mild, DPI: 1600
+
+config INPUT_PROCESSOR_ACCEL_PRESET_HIGH_SENS_LASER
+    bool "High Sensitivity - Laser Mouse (6400 DPI)"
+    help
+      High sensitivity for fast movements with high-DPI laser mouse.
+      Sensitivity: 0.5x, Max: 2.8x, Curve: Mild, DPI: 6400
+
+config INPUT_PROCESSOR_ACCEL_PRESET_HIGH_SENS_TRACKBALL
+    bool "High Sensitivity - Trackball (800 DPI)"
+    help
+      High sensitivity for fast movements with trackball.
+      Sensitivity: 1.4x, Max: 2.6x, Curve: Mild, DPI: 800
+
+config INPUT_PROCESSOR_ACCEL_PRESET_HIGH_SENS_TRACKPAD
+    bool "High Sensitivity - Trackpad/Touchpad (1200 DPI)"
+    help
+      High sensitivity for fast movements with trackpad.
+      Sensitivity: 1.3x, Max: 2.4x, Curve: Mild, DPI: 1200
+
+endchoice
